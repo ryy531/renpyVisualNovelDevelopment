@@ -1,0 +1,42 @@
+# 游戏开发核心设定文档 (Project Bible) - v1.1 (Refactored)
+
+## 1. 项目基础
+- **引擎**：Ren'Py 8.x
+- **类型**：线性视觉小说 + Point & Click 交互
+- **题材**：战双帕弥什二创 / 赛博朋克 / 机械维修
+- **分辨率**：1920x1080
+
+## 2. 文件结构 (File Structure)
+*代码已模块化拆分，位于 `game/scripts/` 下：*
+- `story/script.rpy`: 游戏入口 (`label start`)、序章逻辑、主循环 (`main_hub_loop`)、章节剧情 (`label chapter_x`)。
+- `ui/hub_screens.rpy`: 工作室界面 (`workshop_screen`)、修复弹窗 (`repair_window`)。
+- `ui/custom_screens.rpy`: 全局点击反馈系统 (`key_listener`, `trigger_feedback`)。
+- `systems/variables.rpy`: 全局变量定义 (`default`)。
+
+## 3. 核心玩法循环 (Current Loop)
+1.  **开始游戏** -> 检测进度。
+2.  **序章 (`chapter_progress = 0`)** -> 播放剧情 -> 解锁工作室 -> 进度设为1。
+3.  **工作室 (Hub)**：
+    -   **背包**：触发 `_return == "sortie"` -> 根据进度跳转对应 `label chapter_n` -> 获得资源 -> 返回工作室。
+    -   **扳手**：打开 `repair_window` -> 消耗零件提升 `alpha_fix` 等变量。
+    -   **日记**：(暂未实装功能)。
+
+## 4. 关键数据与变量
+- **变量**：
+    - `chapter_progress` (int): 0=序章, 1=第一章, 2=第二章...
+    - `my_parts` (int): 通用货币资源。
+    - `alpha_fix` / `raven_fix` / `luna_fix` (int): 0-100，机体修复进度。
+- **工作室热点坐标 (Imagemap Hotspots)**：
+    - 背包 (Sortie): `(493, 511, 302, 241)`
+    - 扳手 (Repair): `(459, 190, 267, 214)`
+    - 日记 (Diary): `(20, 802, 280, 149)`
+
+## 5. 已实现机制
+- **打击感反馈**：全屏隐形按钮监听点击，播放 `click_test.ogg` 并显示波纹特效。
+- **Tooltip引导**：鼠标悬停热点时显示文字提示。
+- **数值交互**：修复界面按钮会根据资源数量变灰/变亮。
+
+## 6. 待办事项 (To-Do)
+- [ ] **进度系统重构**：重新设计剧情推进的方式（目前是简单的线性累加）。
+- [ ] **日记系统**：实装剧情回放/图鉴功能。
+- [ ] **素材替换**：将占位符替换为正式美术/音效。
