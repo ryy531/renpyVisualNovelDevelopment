@@ -94,21 +94,43 @@ style frame:
 
 screen say(who, what):
 
+    # Ren'Py 在文字显示完毕或等待手动继续时设置 ctc。
+    default ctc = None
+    $ story_left = 135 if renpy.variant("small") else gui.story_left
+    $ story_width = 1650 if renpy.variant("small") else gui.story_width
+
     window:
         id "window"
+        style "story_say_window"
 
-        if who is not None:
+        fixed:
+            # 姓名在左，声纹在右；自动按姓名宽度排列。
+            hbox:
+                pos (story_left, 12)
+                ysize 44
+                spacing 24
 
-            window:
-                id "namebox"
-                style "namebox"
-                text who id "who"
+                if who is not None:
+                    window:
+                        id "namebox"
+                        style "story_namebox"
+                        text who id "who" style "story_say_label"
 
-        text what id "what"
+                add "story_voice_wave":
+                    zoom 0.5
+                    yalign 0.5
 
+            add Solid(gui.story_line_color):
+                pos (story_left, 70)
+                xysize (story_width, 1)
 
-    ## 如果有对话框头像，会将其显示在文本之上。请不要在手机界面下显示这个，因为
-    ## 没有空间。
+            text what id "what" style "story_say_dialogue"
+
+            showif ctc:
+                add ctc at story_next_pulse:
+                    align (1.0, 1.0)
+                    offset (-56, -18)
+
     if not renpy.variant("small"):
         add SideImage() xalign 0.0 yalign 1.0
 
@@ -233,9 +255,10 @@ screen quick_menu():
     ## 确保该菜单出现在其他屏幕之上，
     zorder 100
 
-    if quick_menu:
+    if quick_menu and not renpy.get_screen("story_centered"):
 
         hbox:
+            id "quick_menu_buttons"
             style_prefix "quick"
             style "quick_menu"
 
@@ -1500,9 +1523,10 @@ screen quick_menu():
 
     zorder 100
 
-    if quick_menu:
+    if quick_menu and not renpy.get_screen("story_centered"):
 
         hbox:
+            id "quick_menu_buttons"
             style "quick_menu"
             style_prefix "quick"
 

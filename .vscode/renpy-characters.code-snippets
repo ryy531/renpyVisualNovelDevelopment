@@ -1,0 +1,80 @@
+{
+    "瑟拉 / sera": {
+        "scope": "renpy",
+        "prefix": ["sera", "瑟拉"],
+        "body": "sera",
+        "description": "角色名：瑟拉"
+    },
+    "老师 / teacher": {
+        "scope": "renpy",
+        "prefix": ["teacher", "老师"],
+        "body": "teacher",
+        "description": "角色名：老师"
+    },
+    "构造体 / constructor": {
+        "scope": "renpy",
+        "prefix": ["constructor", "构造体"],
+        "body": "constructor",
+        "description": "角色名：构造体"
+    },
+    "西格蒙德 / sigmund": {
+        "scope": "renpy",
+        "prefix": ["sigmund", "西格蒙德"],
+        "body": "sigmund",
+        "description": "角色名：西格蒙德"
+    },
+    "凡尼特 / vannett": {
+        "scope": "renpy",
+        "prefix": ["vannett", "凡尼特"],
+        "body": "vannett",
+        "description": "角色名：凡尼特"
+    },
+    "哈里森 / harrison": {
+        "scope": "renpy",
+        "prefix": ["harrison", "哈里森"],
+        "body": "harrison",
+        "description": "角色名：哈里森"
+    },
+    "娜塔莉亚 / natalia": {
+        "scope": "renpy",
+        "prefix": ["natalia", "娜塔莉亚"],
+        "body": "natalia",
+        "description": "角色名：娜塔莉亚"
+    },
+    "阿尔法 / alpha": {
+        "scope": "renpy",
+        "prefix": ["alpha", "阿尔法"],
+        "body": "alpha",
+        "description": "角色名：阿尔法"
+    },
+    "鸦羽 / raven": {
+        "scope": "renpy",
+        "prefix": ["raven", "鸦羽"],
+        "body": "raven",
+        "description": "角色名：鸦羽（台词自动加密）"
+    },
+    "鸦羽预加密 / raven_x": {
+        "scope": "renpy",
+        "prefix": "raven_x",
+        "body": "raven_x",
+        "description": "角色名：鸦羽（机密预加密台词）"
+    },
+    "Laurel-II / laurel": {
+        "scope": "renpy",
+        "prefix": ["laurel", "Laurel-II"],
+        "body": "laurel",
+        "description": "角色名：Laurel-II"
+    },
+    "旁白 / narrator": {
+        "scope": "renpy",
+        "prefix": ["narrator", "旁白"],
+        "body": "narrator",
+        "description": "旁白"
+    },
+    "系统 / system": {
+        "scope": "renpy",
+        "prefix": ["system", "系统"],
+        "body": "system",
+        "description": "系统提示"
+    }
+}

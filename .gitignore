@@ -2,6 +2,12 @@
 /game/saves
 /game/cache
 
+# 音频素材不进版本库（2026-08-07）。
+# 目前是临时 WAV，共 364MB，未来会从素材库重新剪辑并统一转成 OGG。
+# 未压缩音频一旦进入 git 历史就无法通过后续转换缩小仓库，故整个目录排除。
+# ⚠️ 新克隆的仓库缺少音频会导致 play music/sound 报错——请从素材库单独同步。
+/game/audio/
+
 # Compiled script files. These are important for saving, and so should
 # be preserved by developer and build systems after the game has been released.
 /game/**/*.rpyc
@@ -24,3 +30,8 @@
 /dialogue.tab
 /dialogue.txt
 /strings.json
+
+# Local assistant attachments and Python bytecode.
+/.codex-remote-attachments/
+__pycache__/
+*.py[cod]

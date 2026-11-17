@@ -1,0 +1,89 @@
+# Test harness: copy to game/_workshop_smoke.rpy, then run Ren'Py test workshop_smoke.
+# Remove the temporary .rpy and .rpyc after testing.
+label _workshop_smoke_start:
+    show screen key_listener
+    $ chapter_progress = 1
+    jump workshop_intro
+
+label _workshop_smoke_repeat:
+    call chapter_1_first_repair
+    "重复调用已完成事件后。"
+    jump main_hub_loop
+
+testsuite workshop_smoke:
+    teardown:
+        exit
+
+    testcase story_flow:
+        $ preferences.text_cps = 0
+        run Start("_workshop_smoke_start")
+        pause until screen "say"
+        assert eval (not any(tag in renpy.get_showing_tags() for tag in HIGHLIGHT_TAGS))
+        click pos (1000, 500)
+        advance until screen "workshop_tutorial_focus"
+        pause 0.4
+        screenshot "workshop_dialogue_tutorial.png"
+        advance until screen "workshop_screen" timeout 90
+        assert eval (workshop_tutorial_seen and my_parts == 0)
+        click pos (600, 300)
+        assert not screen "repair_window"
+        click pos (100, 850)
+        assert not screen "notify"
+        assert eval (chapter1_repair_stage == "not_started")
+        move pos (600, 600)
+        pause 0.3
+        assert eval (GetTooltip() == "继续")
+        screenshot "workshop_continue_only.png"
+        click pos (600, 600)
+        pause 0.5
+        advance until screen "workshop_screen" timeout 90
+        assert eval (chapter1_repair_stage == "awaiting_repair" and my_parts == 1)
+        assert eval (chapter_progress == 1 and workshop_alpha_name() == "？？？")
+        # The continue hotspot cannot leave the mandatory repair visit.
+        click pos (600, 600)
+        assert screen "workshop_screen"
+        assert eval (my_parts == 1)
+        click pos (600, 300)
+        assert screen "repair_window"
+        screenshot "workshop_story_repair.png"
+        click "关 闭"
+        assert screen "workshop_screen"
+        assert eval (my_parts == 1 and alpha_fix == 0)
+        $ renpy.save("workshop-smoke-pending")
+        click pos (600, 300)
+        click "修复 (+20%, 消耗1零件)"
+        assert not screen "workshop_screen"
+        assert not screen "repair_window"
+        assert eval (my_parts == 0 and alpha_fix == 20)
+        assert eval (chapter1_repair_stage == "memory" and is_memory_unlocked("alpha", 5))
+        assert eval (not is_memory_read("alpha", 5))
+        pause 1.0
+        screenshot "workshop_memory_auto.png"
+        # Loading a pre-repair save restores the one part, without granting it again.
+        run Function(renpy.load, "workshop-smoke-pending")
+        pause until screen "workshop_screen"
+        assert eval (my_parts == 1 and alpha_fix == 0 and chapter1_repair_stage == "awaiting_repair")
+        click pos (600, 300)
+        click "修复 (+20%, 消耗1零件)"
+        advance until "哇！吓我一跳！" timeout 90
+        assert not screen "workshop_screen"
+        assert eval (chapter_progress == 1 and workshop_alpha_name() == "？？？")
+        assert eval (chapter1_repair_stage == "complete" and is_memory_read("alpha", 5))
+        assert eval (my_parts == 0 and alpha_fix == 20)
+        pause 1.0
+        screenshot "workshop_story_continues.png"
+        advance until screen "workshop_screen" timeout 90
+        assert eval (chapter_progress == 2 and workshop_alpha_name() == "阿尔法")
+        click pos (600, 300)
+        assert screen "repair_window"
+        assert eval (not raven_body_unlocked and not laurel_body_unlocked)
+        click "记忆碎片 A05"
+        assert not screen "repair_window"
+        advance until screen "workshop_screen" timeout 90
+        assert eval (chapter_progress == 2 and my_parts == 0 and alpha_fix == 20)
+        # Re-entering a completed event neither grants nor consumes another part.
+        run Jump("_workshop_smoke_repeat")
+        assert eval (chapter1_repair_stage == "complete" and my_parts == 0 and alpha_fix == 20)
+        assert "重复调用已完成事件后"
+
+

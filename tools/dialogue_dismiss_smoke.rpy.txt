@@ -1,0 +1,88 @@
+# Run with tools/run_dialogue_smoke.py in an isolated project copy.
+# --savedir alone still shares the original game/saves directory.
+default _dismiss_test_line = 0
+
+label _dismiss_test_start:
+    show screen key_listener
+    $ preferences.text_cps = 20
+    $ preferences.afm_enable = False
+    $ _dismiss_test_line = 1
+    "这是一句用于验证点击补全和连续点击保护的长句，第一次点击必须只补全这一句。"
+    $ _dismiss_test_line = 2
+    sera "短句。"
+    $ preferences.text_cps = 0
+    $ _dismiss_test_line = 3
+    system "瞬间显示的文字也需要短暂停留。"
+    $ _dismiss_test_line = 4
+    "分段前{w}分段后"
+    $ _dismiss_test_line = 5
+    "定时前{w=0.1}定时后{nw}"
+    $ _dismiss_test_line = 6
+    "测试完成。"
+    return
+
+testsuite dialogue_dismiss:
+    teardown:
+        exit
+
+    testcase exactly_two_clicks:
+        run Start("_dismiss_test_start")
+        pause until screen "say"
+        pause until eval (renpy.get_widget("say", "what").slow)
+        assert eval (_dialogue_text_ready_at is None)
+        assert eval (renpy.get_widget("say", "what").slow)
+        click pos (1000, 500)
+        # Check immediately, without waiting for natural typing to finish.
+        assert eval (_dismiss_test_line == 1)
+        assert eval (_dialogue_text_ready_at is not None)
+        assert eval (not renpy.get_widget("say", "what").slow)
+        pause 0.3
+        click pos (1000, 500)
+        assert eval (_dismiss_test_line == 2)
+        pause until eval (renpy.get_widget("say", "what").slow)
+        assert eval (renpy.get_widget("say", "what").slow)
+        run MainMenu(confirm=False)
+        pause until screen "main_menu"
+
+    testcase manual_progress:
+        run Start("_dismiss_test_start")
+        pause until screen "say"
+        assert eval (_dialogue_text_ready_at is None)
+        click pos (1000, 500)
+        assert eval (_dialogue_text_ready_at is not None)
+        click pos (1000, 500)
+        assert eval (_dismiss_test_line == 1)
+        pause 0.3
+        click pos (1000, 500)
+        assert eval (_dismiss_test_line == 2)
+        # Natural completion must have the same guard as click-to-reveal.
+        pause until eval (_dialogue_text_ready_at is not None)
+        keysym "K_SPACE"
+        assert eval (_dismiss_test_line == 2)
+        pause 0.3
+        keysym "K_RETURN"
+        assert eval (_dismiss_test_line == 3)
+        # Instant text still needs a fresh guard.
+        click pos (1000, 500)
+        assert eval (_dismiss_test_line == 3)
+        pause 0.3
+        $ renpy.save("dismiss-guard")
+        click pos (1000, 500)
+        assert eval (_dismiss_test_line == 4)
+        run Function(renpy.load, "dismiss-guard")
+        pause until eval (_dismiss_test_line == 3)
+        pause until eval (_dialogue_text_ready_at is not None)
+        click pos (1000, 500)
+        assert eval (_dismiss_test_line == 3)
+        pause 0.3
+        click pos (1000, 500)
+        assert eval (_dismiss_test_line == 4)
+        pause 0.3
+        click pos (1000, 500)
+        pause until eval (_dialogue_text_ready_at is not None)
+        click pos (1000, 500)
+        assert eval (_dismiss_test_line == 4)
+        pause 0.3
+        click pos (1000, 500)
+        # Timed waits and {nw} keep their scripted automatic progression.
+        pause until eval (_dismiss_test_line == 6)
