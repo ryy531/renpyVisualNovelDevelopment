@@ -35,3 +35,12 @@
 /.codex-remote-attachments/
 __pycache__/
 *.py[cod]
+
+# 文档与素材不进版本库（2026-11-23，误推送后补充）。
+# 仓库只放代码；文档、截图、字体、图片、音效另行备份。
+# 注意：game/images/ 下早期已提交的少数文件仍会被跟踪，不受影响。
+/_doc/
+/tests/screenshots/
+/game/fonts/
+/game/images/
+/game/sfx/
